@@ -82,10 +82,14 @@ const MapView: React.FC<MapViewProps> = ({
         zoom={zoom}
         className="h-full w-full"
         scrollWheelZoom={true}
+        worldCopyJump={true}
+        maxBounds={[[-85, -180], [85, 180]]}
+        maxBoundsViscosity={1.0}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          noWrap={true}
         />
 
         {alerts.map((alert) => (
