@@ -54,3 +54,5 @@ coverage/
 .temp/
 .turbo/
 *.tgz
+node_modules
+node_modules
