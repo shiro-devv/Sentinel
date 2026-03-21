@@ -1,0 +1,42 @@
+{
+  "name": "disaster-detector",
+  "version": "1.0.0",
+  "description": "Real-time calamity intelligence platform with prediction, anomaly detection, and live dashboard",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend && uvicorn app.main:app --reload --host 0.0.0.0 --port 8000",
+    "dev:frontend": "cd frontend && npm run dev",
+    "build": "npm run build:backend && npm run build:frontend",
+    "build:backend": "cd backend && echo 'Backend built with Docker'",
+    "build:frontend": "cd frontend && npm run build",
+    "start": "docker-compose -f infra/docker-compose.yml up -d",
+    "stop": "docker-compose -f infra/docker-compose.yml down",
+    "restart": "docker-compose -f infra/docker-compose.yml restart",
+    "logs": "docker-compose -f infra/docker-compose.yml logs -f",
+    "logs:backend": "docker-compose -f infra/docker-compose.yml logs -f backend",
+    "logs:frontend": "docker-compose -f infra/docker-compose.yml logs -f frontend",
+    "logs:worker": "docker-compose -f infra/docker-compose.yml logs -f celery-worker",
+    "db:migrate": "cd backend && alembic upgrade head",
+    "db:revision": "cd backend && alembic revision --autogenerate -m",
+    "test": "npm run test:backend && npm run test:frontend",
+    "test:backend": "cd backend && pytest",
+    "test:frontend": "cd frontend && npm test",
+    "lint": "npm run lint:backend && npm run lint:frontend",
+    "lint:backend": "cd backend && ruff check .",
+    "lint:frontend": "cd frontend && npm run lint",
+    "clean": "rm -rf backend/__pycache__ frontend/dist node_modules backend/.venv",
+    "mobile:android": "cd frontend && npx cap add android",
+    "mobile:ios": "cd frontend && npx cap add ios",
+    "mobile:sync": "cd frontend && npx cap sync",
+    "mobile:open:android": "cd frontend && npx cap open android",
+    "mobile:open:ios": "cd frontend && npx cap open ios"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
