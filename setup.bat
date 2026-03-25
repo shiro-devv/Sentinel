@@ -1,10 +1,10 @@
 @echo off
 setlocal enabledelayedexpansion
-title Disaster Detector - Direct Setup
+title Sentinel - Direct Setup
 
 echo.
 echo ============================================================
-echo   DISASTER DETECTOR - Simple Setup
+echo   SENTINEL - Simple Setup
 echo ============================================================
 echo.
 

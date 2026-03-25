@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { Alert } from '../types';
+import { useSettings } from '../context/SettingsContext';
 import 'leaflet/dist/leaflet.css';
 
 interface MapViewProps {
@@ -38,7 +39,7 @@ const createMarkerIcon = (severity: string) => {
         height: 24px;
         border-radius: 50%;
         border: 3px solid white;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.4);
       "></div>
     `,
     iconSize: [24, 24],
@@ -56,6 +57,31 @@ const MapUpdater: React.FC<{ center: [number, number]; zoom: number }> = ({ cent
   return null;
 };
 
+// Map tile configurations - HD quality tiles with higher resolution
+const mapTiles: Record<string, { url: string; attribution: string; maxZoom: number }> = {
+  dark: {
+    url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}@2x.png',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    maxZoom: 19,
+  },
+  light: {
+    url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}@2x.png',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    maxZoom: 19,
+  },
+  satellite: {
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    attribution: '&copy; <a href="https://www.esri.com/">Esri</a>',
+    maxZoom: 18,
+  },
+  terrain: {
+    // Esri World Topographic Map - HD quality with elevation data
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+    attribution: '&copy; <a href="https://www.esri.com/">Esri</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom: 19,
+  },
+};
+
 const MapView: React.FC<MapViewProps> = ({
   alerts,
   center = [39.8283, -98.5795],
@@ -63,6 +89,10 @@ const MapView: React.FC<MapViewProps> = ({
   onAlertClick,
 }) => {
   const mapRef = useRef<L.Map>(null);
+  const { settings } = useSettings();
+
+  // Get current tile configuration
+  const currentTile = mapTiles[settings.mapStyle] || mapTiles.dark;
 
   // Calculate map bounds from alerts
   useEffect(() => {
@@ -83,13 +113,18 @@ const MapView: React.FC<MapViewProps> = ({
         className="h-full w-full"
         scrollWheelZoom={true}
         worldCopyJump={true}
-        maxBounds={[[-85, -180], [85, 180]]}
-        maxBoundsViscosity={1.0}
+        maxBounds={[[-90, -Infinity], [90, Infinity]]}
+        maxBoundsViscosity={0.8}
+        minZoom={1}
+        maxZoom={currentTile.maxZoom}
+        key={settings.mapStyle} // Force re-render when map style changes
+        preferCanvas={true}
       >
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          noWrap={true}
+          attribution={currentTile.attribution}
+          url={currentTile.url}
+          maxZoom={currentTile.maxZoom}
+          tileSize={settings.mapStyle === 'terrain' ? 512 : 256}
         />
 
         {alerts.map((alert) => (

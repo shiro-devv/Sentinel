@@ -1,7 +1,11 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 
-const Sidebar: React.FC = () => {
+interface SidebarProps {
+  onClose?: () => void;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
   const navItems = [
     {
       path: '/',
@@ -62,34 +66,74 @@ const Sidebar: React.FC = () => {
   ];
 
   return (
-    <aside className="hidden lg:flex lg:flex-col w-64 bg-slate-800 border-r border-slate-700">
-      <nav className="flex-1 p-4">
+    <aside className="flex flex-col h-full bg-slate-900/80 backdrop-blur-xl border-r border-white/5">
+      {/* Mobile header */}
+      <div className="flex items-center justify-between p-4 border-b border-white/5 lg:hidden">
+        <span className="text-lg font-semibold text-white">Menu</span>
+        <button
+          onClick={onClose}
+          className="p-2 rounded-xl hover:bg-white/10 transition-all duration-200"
+          aria-label="Close menu"
+        >
+          <svg
+            className="w-6 h-6 text-slate-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+      </div>
+
+      {/* Navigation */}
+      <nav className="flex-1 p-4 overflow-y-auto">
         <ul className="space-y-2">
           {navItems.map((item) => (
             <li key={item.path}>
               <NavLink
                 to={item.path}
+                onClick={onClose}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                  `flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group border border-transparent ${
                     isActive
-                      ? 'bg-blue-600 text-white'
-                      : 'text-slate-300 hover:bg-slate-700'
+                      ? 'nav-active bg-cyan-500/10 text-cyan-400 border-cyan-500/30 shadow-lg shadow-cyan-500/10'
+                      : 'text-slate-400 hover:bg-white/5 hover:text-white hover:border-white/10'
                   }`
                 }
                 end={item.path === '/'}
               >
-                {item.icon}
-                <span>{item.label}</span>
+                <span className={`transition-transform duration-300 group-hover:scale-110 ${
+                  item.path === '/' ? 'text-cyan-400' : ''
+                }`}>
+                  {item.icon}
+                </span>
+                <span className="font-medium">{item.label}</span>
               </NavLink>
             </li>
           ))}
         </ul>
       </nav>
-      
-      <div className="p-4 border-t border-slate-700">
-        <div className="text-xs text-slate-500">
-          <p>System Status</p>
-          <p className="mt-1 text-green-400">All systems operational</p>
+
+      {/* System Status */}
+      <div className="p-4 border-t border-white/5">
+        <div className="glass-panel p-4">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="relative">
+              <div className="w-2.5 h-2.5 bg-emerald-400 rounded-full" />
+              <div className="absolute inset-0 w-2.5 h-2.5 bg-emerald-400 rounded-full animate-ping opacity-40" />
+            </div>
+            <span className="text-sm font-medium text-slate-300">System Status</span>
+          </div>
+          <p className="text-xs text-emerald-400">All systems operational</p>
+          <div className="mt-3 pt-3 border-t border-white/5">
+            <p className="text-xs text-slate-500">Last checked: 2 min ago</p>
+          </div>
         </div>
       </div>
     </aside>
