@@ -1,5 +1,5 @@
 """
-Disaster Detector - Main FastAPI Application
+Sentinel - Main FastAPI Application
 """
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request

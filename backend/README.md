@@ -1,7 +1,7 @@
-# Disaster Detector Backend
+# Sentinel Backend
 
 ## Overview
-The backend service for the Disaster Detection and Alerting System, built with FastAPI and Python.
+The backend service for the Sentinel Crisis Intelligence Platform, built with FastAPI and Python.
 
 ## Tech Stack
 - **Framework**: FastAPI

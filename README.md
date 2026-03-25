@@ -1,6 +1,6 @@
-# Disaster Detector
+# Sentinel
 
-A real-time calamity intelligence platform that aggregates disaster data from external APIs, processes and evaluates risk using a Python backend, performs anomaly detection and prediction, streams alerts in real-time, and displays everything in a modern React TypeScript dashboard.
+A real-time crisis intelligence platform that aggregates disaster data from external APIs, processes and evaluates risk using a Python backend, performs anomaly detection and prediction, streams alerts in real-time, and displays everything in a modern React TypeScript dashboard.
 
 ## Features
 

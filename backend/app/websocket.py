@@ -137,7 +137,7 @@ async def websocket_endpoint(websocket: WebSocket):
                 "type": "connected",
                 "client_id": client_id,
                 "timestamp": datetime.utcnow().isoformat(),
-                "message": "Connected to Disaster Detector real-time feed",
+                "message": "Connected to Sentinel real-time feed",
             },
             client_id,
         )
