@@ -10,6 +10,8 @@ interface MapViewProps {
   center?: [number, number];
   zoom?: number;
   onAlertClick?: (alert: Alert) => void;
+  disableAutoFit?: boolean;
+  mapStyle?: 'dark' | 'light' | 'satellite' | 'terrain' | string;
 }
 
 // Fix Leaflet default marker icon
@@ -87,22 +89,24 @@ const MapView: React.FC<MapViewProps> = ({
   center = [39.8283, -98.5795],
   zoom = 4,
   onAlertClick,
+  disableAutoFit = false,
+  mapStyle,
 }) => {
   const mapRef = useRef<L.Map>(null);
   const { settings } = useSettings();
 
   // Get current tile configuration
-  const currentTile = mapTiles[settings.mapStyle] || mapTiles.dark;
+  const currentTile = mapTiles[mapStyle || settings.mapStyle] || mapTiles.dark;
 
   // Calculate map bounds from alerts
   useEffect(() => {
-    if (mapRef.current && alerts.length > 0) {
+    if (mapRef.current && alerts.length > 0 && !disableAutoFit) {
       const bounds = L.latLngBounds(
         alerts.map((alert) => [alert.latitude, alert.longitude] as [number, number])
       );
       mapRef.current.fitBounds(bounds, { padding: [50, 50], maxZoom: 10 });
     }
-  }, [alerts]);
+  }, [alerts, disableAutoFit]);
 
   return (
     <div className="h-full w-full rounded-lg overflow-hidden">
@@ -117,15 +121,16 @@ const MapView: React.FC<MapViewProps> = ({
         maxBoundsViscosity={0.8}
         minZoom={1}
         maxZoom={currentTile.maxZoom}
-        key={settings.mapStyle} // Force re-render when map style changes
+        key={mapStyle || settings.mapStyle} // Force re-render when map style changes
         preferCanvas={true}
       >
         <TileLayer
           attribution={currentTile.attribution}
           url={currentTile.url}
           maxZoom={currentTile.maxZoom}
-          tileSize={settings.mapStyle === 'terrain' ? 512 : 256}
+          tileSize={(mapStyle || settings.mapStyle) === 'terrain' ? 512 : 256}
         />
+        <MapUpdater center={center} zoom={zoom} />
 
         {alerts.map((alert) => (
           <Marker

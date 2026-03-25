@@ -1,6 +1,7 @@
 import React from 'react';
 import { Alert } from '../types';
 import { formatDistanceToNow, format } from 'date-fns';
+import MapView from './MapView';
 
 interface AlertDetailModalProps {
   alert: Alert;
@@ -56,11 +57,11 @@ const AlertDetailModal: React.FC<AlertDetailModalProps> = ({ alert, onClose }) =
     >
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
       <div
-        className={`relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl bg-gradient-to-br ${config.gradient} backdrop-blur-xl border ${config.border} shadow-2xl animate-slide-up`}
+        className={`relative w-full max-w-5xl max-h-[90vh] flex flex-col rounded-2xl bg-gradient-to-br ${config.gradient} backdrop-blur-xl border ${config.border} shadow-2xl animate-slide-up`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="sticky top-0 bg-slate-900/90 backdrop-blur-xl border-b border-slate-700/30 p-6 flex items-start justify-between">
+        <div className="flex-none border-b border-slate-700/30 p-6 flex items-start justify-between">
           <div className="flex items-center gap-3">
             <span className="text-4xl">{typeIcons[alert.alert_type] || '⚠️'}</span>
             <div>
@@ -91,9 +92,11 @@ const AlertDetailModal: React.FC<AlertDetailModalProps> = ({ alert, onClose }) =
         </div>
 
         {/* Content */}
-        <div className="p-6 space-y-6">
-          {/* Location & Time */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="p-6 grid grid-cols-1 lg:grid-cols-5 gap-6 overflow-y-auto flex-1">
+          {/* Left Column: Details */}
+          <div className="lg:col-span-3 space-y-6">
+            {/* Location & Time */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/30">
               <p className="text-xs text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -187,22 +190,22 @@ const AlertDetailModal: React.FC<AlertDetailModalProps> = ({ alert, onClose }) =
               </svg>
               Status & Notifications
             </p>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <span className={`badge justify-center ${alert.is_active ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' : 'bg-slate-700/50 text-slate-400 border-slate-600/30'} border`}>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className={`badge ${alert.is_active ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' : 'bg-slate-700/50 text-slate-400 border-slate-600/30'} border`}>
                 {alert.is_active ? '● Active' : '○ Inactive'}
               </span>
               {alert.sms_sent && (
-                <span className="badge justify-center bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                <span className="badge bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                   SMS ✓
                 </span>
               )}
               {alert.email_sent && (
-                <span className="badge justify-center bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                <span className="badge bg-blue-500/20 text-blue-300 border border-blue-500/30">
                   Email ✓
                 </span>
               )}
               {alert.acknowledged && (
-                <span className="badge justify-center bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                <span className="badge bg-purple-500/20 text-purple-300 border border-purple-500/30">
                   Acked ✓
                 </span>
               )}
@@ -210,6 +213,20 @@ const AlertDetailModal: React.FC<AlertDetailModalProps> = ({ alert, onClose }) =
             <div className="mt-3 pt-3 border-t border-slate-700/30 flex items-center gap-2 text-xs text-slate-500">
               <span>Source: {alert.source}</span>
               {alert.external_id && <span>• ID: {alert.external_id}</span>}
+            </div>
+          </div>
+          </div>
+
+          {/* Right Column: Map */}
+          <div className="lg:col-span-2 flex flex-col min-h-[300px] lg:min-h-0 relative z-0">
+            <div className="flex-1 w-full rounded-xl overflow-hidden border border-slate-700/30 relative">
+              <MapView 
+                alerts={[alert]} 
+                center={[alert.latitude, alert.longitude]} 
+                zoom={8} 
+                disableAutoFit={true} 
+                mapStyle="satellite"
+              />
             </div>
           </div>
         </div>
