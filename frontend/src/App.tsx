@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { useWebSocket } from './hooks/useWebSocket';
 import { useSettings } from './context/SettingsContext';
+import { useAppStore } from './store';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import NotificationBanner from './components/NotificationBanner';
+import AlertDetailModal from './components/AlertDetailModal';
 import Dashboard from './pages/Dashboard';
 import AlertsPage from './pages/AlertsPage';
 import MapPage from './pages/MapPage';
@@ -14,6 +16,7 @@ function App() {
   const { isConnected, lastAlert } = useWebSocket();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { settings } = useSettings();
+  const { selectedAlert, setSelectedAlert } = useAppStore();
 
   // Apply light/dark mode class to body
   useEffect(() => {
@@ -79,6 +82,14 @@ function App() {
           <p className="mt-2 md:mt-0">© 2026 Disaster Intelligence</p>
         </div>
       </footer>
+
+      {/* Alert Detail Modal */}
+      {selectedAlert && (
+        <AlertDetailModal
+          alert={selectedAlert}
+          onClose={() => setSelectedAlert(null)}
+        />
+      )}
     </div>
   );
 }
